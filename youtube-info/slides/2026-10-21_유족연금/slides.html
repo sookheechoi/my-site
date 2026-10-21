@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>유족연금 계산 슬라이드</title>
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 400; src: url("../../../assets/fonts/Pretendard-Regular.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("../../../assets/fonts/Pretendard-SemiBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("../../../assets/fonts/Pretendard-Bold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("../../../assets/fonts/Pretendard-ExtraBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("../../../assets/fonts/Pretendard-Black.otf"); }
+
+  :root {
+    --bg: #F6F1E7;
+    --ink: #17253F;
+    --muted: #5B6578;
+    --navy: #1B2D52;
+    --yellow: #FFD43B;
+    --red: #D33A2C;
+    --green: #1E8A4C;
+    --card: #FFFFFF;
+    --line: #E3DACB;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+  body { font-family: "Pretendard"; color: var(--ink); word-break: keep-all; }
+
+  /* 아래 20%(216px)는 자막 자리로 비워 둔다 */
+  .slide { display: none; position: relative; width: 1920px; height: 1080px; padding: 0 120px 216px; flex-direction: column; }
+  .slide.on { display: flex; }
+
+  .head { margin-top: 56px; background: var(--navy); color: #fff; border-radius: 28px; padding: 26px 48px; font-weight: 900; font-size: 68px; letter-spacing: -0.03em; line-height: 1.15; align-self: flex-start; }
+  .head em { font-style: normal; color: var(--yellow); }
+  .tag { position: absolute; right: 120px; top: 80px; font-weight: 700; font-size: 34px; color: var(--muted); background: #EAE2D3; border-radius: 40px; padding: 10px 28px; }
+
+  .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  .em-red { color: var(--red); }
+  .em-green { color: var(--green); }
+  .hl { background: linear-gradient(transparent 58%, var(--yellow) 58%); padding: 0 6px; }
+
+  /* 카드 줄 */
+  .row { display: flex; gap: 40px; align-items: stretch; }
+  .card { flex: 1; background: var(--card); border: 4px solid var(--line); border-radius: 36px; padding: 40px 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .card .k { font-weight: 700; font-size: 50px; color: var(--muted); }
+  .card .v { font-weight: 900; font-size: 140px; letter-spacing: -0.04em; line-height: 1.05; margin-top: 12px; }
+  .card .s { font-weight: 600; font-size: 44px; margin-top: 16px; color: var(--ink); }
+  .card.pick { border-color: var(--green); background: #EEF8F1; }
+  .card.lose { border-color: var(--red); background: #FCEFED; }
+
+  /* 계산식 */
+  .calc { display: flex; align-items: center; gap: 36px; justify-content: center; flex-wrap: nowrap; }
+  .calc .b { background: var(--card); border: 4px solid var(--line); border-radius: 30px; padding: 26px 40px; text-align: center; }
+  .calc .b .k { font-weight: 700; font-size: 38px; color: var(--muted); }
+  .calc .b .v { font-weight: 900; font-size: 96px; letter-spacing: -0.03em; line-height: 1.1; white-space: nowrap; }
+  .calc + .calc { margin-top: 36px; }
+  .calc .op { font-weight: 900; font-size: 96px; color: var(--navy); }
+  .calc .b.res { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .calc .b.res .k { color: #C9D3E8; }
+  .calc .b.res .v { color: var(--yellow); }
+
+  .result { margin-top: 56px; text-align: center; font-weight: 800; font-size: 64px; letter-spacing: -0.02em; }
+  .note { margin-top: 26px; text-align: center; font-weight: 600; font-size: 42px; color: var(--muted); }
+
+  /* 목록 */
+  .list { display: flex; flex-direction: column; gap: 16px; }
+  .item { display: flex; align-items: center; gap: 30px; background: var(--card); border: 4px solid var(--line); border-radius: 28px; padding: 12px 36px; font-weight: 700; font-size: 48px; letter-spacing: -0.02em; }
+  .item .n { flex: none; width: 68px; height: 68px; border-radius: 34px; background: var(--navy); color: var(--yellow); font-weight: 900; font-size: 46px; display: flex; align-items: center; justify-content: center; }
+  .item b { font-weight: 900; }
+
+  /* 표 */
+  table { width: 100%; border-collapse: separate; border-spacing: 0 18px; }
+  th { font-weight: 800; font-size: 44px; color: var(--muted); text-align: center; padding: 0 20px 4px; }
+  td { background: var(--card); font-weight: 800; font-size: 60px; text-align: center; padding: 22px 20px; border-top: 4px solid var(--line); border-bottom: 4px solid var(--line); }
+  td:first-child { border-left: 4px solid var(--line); border-radius: 26px 0 0 26px; }
+  td:last-child { border-right: 4px solid var(--line); border-radius: 0 26px 26px 0; }
+  td.win { color: var(--green); }
+  td .small { font-size: 40px; color: var(--muted); font-weight: 700; }
+
+  /* 순서 화살표 */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 18px; }
+  .step { background: var(--card); border: 4px solid var(--line); border-radius: 30px; padding: 30px 24px; text-align: center; min-width: 250px; }
+  .step .n { font-weight: 900; font-size: 44px; color: var(--muted); }
+  .step .t { font-weight: 900; font-size: 60px; margin-top: 6px; }
+  .step .c { font-weight: 700; font-size: 36px; color: var(--muted); margin-top: 6px; }
+  .step.first { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .step.first .n, .step.first .c { color: #C9D3E8; }
+  .step.first .t { color: var(--yellow); }
+  .arr { font-weight: 900; font-size: 64px; color: var(--navy); }
+
+  /* 마지막 */
+  .big { text-align: center; font-weight: 900; font-size: 330px; letter-spacing: -0.05em; line-height: 1; color: var(--red); }
+  .bigsub { text-align: center; font-weight: 800; font-size: 72px; letter-spacing: -0.02em; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<!-- 1. 지급 비율 -->
+<section class="slide">
+  <div class="head">유족연금은 <em>얼마나</em> 나올까요?</div>
+  <div class="body">
+    <div class="row">
+      <div class="card"><div class="k">가입 10년 미만</div><div class="v">40%</div></div>
+      <div class="card"><div class="k">10년 ~ 20년</div><div class="v">50%</div></div>
+      <div class="card pick"><div class="k">20년 이상</div><div class="v em-green">60%</div></div>
+    </div>
+    <div class="note">돌아가신 분의 <b>기본연금액</b>에 곱해요 · 국민연금공단 기준</div>
+  </div>
+</section>
+
+<!-- 2. 100만 원 × 60% -->
+<section class="slide">
+  <div class="head">남편 연금이 <em>그대로</em> 오지 않아요</div>
+  <div class="tag">가상 예시</div>
+  <div class="body">
+    <div class="calc">
+      <div class="b"><div class="k">기본연금액</div><div class="v">100만 원</div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">22년 가입</div><div class="v">60%</div></div>
+      <div class="op">=</div>
+      <div class="b res"><div class="k">유족연금</div><div class="v">60만 원</div></div>
+    </div>
+    <div class="result">생활비가 한 달 <span class="em-red">40만 원</span> 빕니다</div>
+  </div>
+</section>
+
+<!-- 3. 8년 vs 15년 -->
+<section class="slide">
+  <div class="head">가입 기간 <em>칸 하나</em> 차이</div>
+  <div class="tag">가상 예시</div>
+  <div class="body">
+    <div class="row">
+      <div class="card"><div class="k">8년 가입 · 40%</div><div class="s">80만 원 × 40%</div><div class="v">32만 원</div></div>
+      <div class="card pick"><div class="k">15년 가입 · 50%</div><div class="s">80만 원 × 50%</div><div class="v em-green">40만 원</div></div>
+    </div>
+    <div class="result">한 달 <span class="hl">8만 원</span> · 1년이면 <span class="hl">96만 원</span> 차이</div>
+  </div>
+</section>
+
+<!-- 4. 받을 수 있는 조건 -->
+<section class="slide">
+  <div class="head">돌아가신 분이 <em>이 중 하나</em>면 받아요</div>
+  <div class="body">
+    <div class="list">
+      <div class="item"><span class="n">1</span><span>노령연금을 받고 계셨던 분</span></div>
+      <div class="item"><span class="n">2</span><span>장애연금(2급 이상)을 받던 분</span></div>
+      <div class="item"><span class="n">3</span><span>국민연금 가입 기간 <b>10년 이상</b></span></div>
+      <div class="item"><span class="n">4</span><span>내야 했던 기간의 <b>3분의 1 이상</b> 납부</span></div>
+      <div class="item"><span class="n">5</span><span>돌아가시기 전 <b>5년 중 3년 이상</b> 납부</span></div>
+    </div>
+    <div class="note">4·5번은 안 낸 기간이 3년 이상이면 해당되지 않아요</div>
+  </div>
+</section>
+
+<!-- 5. 받는 순서 -->
+<section class="slide">
+  <div class="head">받는 <em>순서</em>가 정해져 있어요</div>
+  <div class="body">
+    <div class="flow">
+      <div class="step first"><div class="n">1순위</div><div class="t">배우자</div><div class="c">사실혼 포함</div></div>
+      <div class="arr">›</div>
+      <div class="step"><div class="n">2순위</div><div class="t">자녀</div><div class="c">25세 미만</div></div>
+      <div class="arr">›</div>
+      <div class="step"><div class="n">3순위</div><div class="t">부모</div><div class="c">61~65세 이상</div></div>
+      <div class="arr">›</div>
+      <div class="step"><div class="n">4순위</div><div class="t">손자녀</div><div class="c">19세 미만</div></div>
+      <div class="arr">›</div>
+      <div class="step"><div class="n">5순위</div><div class="t">조부모</div><div class="c">61~65세 이상</div></div>
+    </div>
+    <div class="result">가장 앞 순위 <span class="hl">한 사람</span>만 받아요</div>
+    <div class="note">나이 조건은 장애가 있으면 달라요 · 부모 나이는 출생연도별</div>
+  </div>
+</section>
+
+<!-- 6. 정숙 씨 -->
+<section class="slide">
+  <div class="head">자녀를 먼저 보낸 <em>부모</em>도 받아요</div>
+  <div class="tag">가상 예시 · 정숙 씨</div>
+  <div class="body">
+    <div class="calc">
+      <div class="b"><div class="k">아들 기본연금액</div><div class="v">70만 원</div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">15년 가입</div><div class="v">50%</div></div>
+      <div class="op">=</div>
+      <div class="b res"><div class="k">어머니 몫</div><div class="v">35만 원</div></div>
+    </div>
+    <div class="result">아들에게 배우자·자녀가 없으면 <span class="hl">부모</span> 차례</div>
+  </div>
+</section>
+
+<!-- 7. 순자 씨 선택 -->
+<section class="slide">
+  <div class="head">창구에서 <em>둘 중 하나</em>를 골라요</div>
+  <div class="tag">가상 예시 · 순자 씨</div>
+  <div class="body">
+    <div class="row">
+      <div class="card lose">
+        <div class="k">내 연금을 고르면</div>
+        <div class="s">내 연금 20만 + 유족연금의 <b>30%</b> 24만</div>
+        <div class="v em-red">44만 원</div>
+      </div>
+      <div class="card pick">
+        <div class="k">유족연금을 고르면</div>
+        <div class="s">유족연금 전액 (내 연금은 멈춤)</div>
+        <div class="v em-green">80만 원</div>
+      </div>
+    </div>
+    <div class="result">한 달 <span class="hl">36만 원</span> · 1년이면 <span class="hl">432만 원</span> 차이</div>
+  </div>
+</section>
+
+<!-- 8. 10년이면 -->
+<section class="slide">
+  <div class="head">10년이면 <em>얼마</em>일까요?</div>
+  <div class="tag">가상 예시</div>
+  <div class="body">
+    <div class="calc">
+      <div class="b"><div class="k">한 달 차이</div><div class="v">36만 원</div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">1년</div><div class="v">12개월</div></div>
+      <div class="op">=</div>
+      <div class="b"><div class="k">1년 차이</div><div class="v">432만 원</div></div>
+    </div>
+    <div class="calc">
+      <div class="b"><div class="k">1년 차이</div><div class="v">432만 원</div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">기간</div><div class="v">10년</div></div>
+      <div class="op">=</div>
+      <div class="b res"><div class="k">10년 차이</div><div class="v">4,320만 원</div></div>
+    </div>
+    <div class="result">선택 <span class="hl">한 번</span>으로 갈리는 돈이에요</div>
+  </div>
+</section>
+
+<!-- 9. 세 집 비교 -->
+<section class="slide">
+  <div class="head">유족연금이 <em>60만 원</em>일 때, 세 집 비교</div>
+  <div class="tag">가상 예시</div>
+  <div class="body">
+    <table>
+      <tr><th>내 연금</th><th>내 연금 고르면</th><th>유족연금 고르면</th><th>더 받는 쪽</th></tr>
+      <tr><td>30만 원</td><td>48만 원</td><td class="win">60만 원</td><td class="win">유족연금</td></tr>
+      <tr><td>42만 원</td><td>60만 원</td><td>60만 원</td><td>똑같아요</td></tr>
+      <tr><td>55만 원</td><td class="win">73만 원</td><td>60만 원</td><td class="win">내 연금</td></tr>
+    </table>
+    <div class="note">"내 연금 고르면" = 내 연금 + 18만 원(60만 원의 30%)</div>
+  </div>
+</section>
+
+<!-- 10. 70% 기준선 -->
+<section class="slide">
+  <div class="head">우리 집 <em>기준선</em> 찾는 법</div>
+  <div class="body">
+    <div class="calc">
+      <div class="b"><div class="k">유족연금</div><div class="v">60만 원</div></div>
+      <div class="op">×</div>
+      <div class="b"><div class="k">기준</div><div class="v">70%</div></div>
+      <div class="op">=</div>
+      <div class="b res"><div class="k">기준선</div><div class="v">42만 원</div></div>
+    </div>
+    <div class="row" style="margin-top:48px">
+      <div class="card pick"><div class="s">내 연금이 기준선보다 <b>적으면</b></div><div class="v em-green" style="font-size:96px">유족연금</div></div>
+      <div class="card"><div class="s">내 연금이 기준선보다 <b>많으면</b></div><div class="v" style="font-size:96px">내 연금</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 부양가족연금 -->
+<section class="slide">
+  <div class="head">자녀가 있으면 <em>조금 더</em> 붙어요</div>
+  <div class="body">
+    <div class="row">
+      <div class="card pick">
+        <div class="k">부양가족연금 (2026년)</div>
+        <div class="v em-green">연 204,360원</div>
+        <div class="s">자녀 1명당 · 한 달 약 1만 7천 원</div>
+      </div>
+    </div>
+    <div class="note">19세 미만 또는 장애가 있는 자녀 · 국민연금공단 기준</div>
+  </div>
+</section>
+
+<!-- 12. 일하면 멈출까 -->
+<section class="slide">
+  <div class="head">50대에 <em>일하면</em> 멈출까요?</div>
+  <div class="tag">가상 예시</div>
+  <div class="body">
+    <div class="result" style="margin-top:0">기준 소득 <span class="hl">월 319만 3,511원</span> (2026년)</div>
+    <div class="row" style="margin-top:44px">
+      <div class="card pick"><div class="k">마트에서 월 200만 원</div><div class="v em-green" style="font-size:104px">계속 받아요</div></div>
+      <div class="card lose"><div class="k">가게로 월 400만 원</div><div class="v em-red" style="font-size:104px">멈출 수 있어요</div></div>
+    </div>
+    <div class="note">처음 3년은 그냥 받아요 · 60·70대는 해당 없어요</div>
+  </div>
+</section>
+
+<!-- 13. 끝나거나 줄어드는 경우 -->
+<section class="slide">
+  <div class="head">이럴 땐 <em>끝나거나 줄어요</em></div>
+  <div class="body">
+    <div class="list">
+      <div class="item"><span class="n">1</span><span>배우자가 재혼하면 → <b class="em-red">권리가 사라져요</b></span></div>
+      <div class="item"><span class="n">2</span><span>자녀 <b>25세</b> · 손자녀 <b>19세</b>가 되면 → <b class="em-red">끝나요</b></span></div>
+      <div class="item"><span class="n">3</span><span>산재 유족급여를 같이 받으면 → <b class="em-red">절반만</b></span></div>
+      <div class="item"><span class="n">4</span><span>법원 판단으로 상속권을 잃은 유족 → <b class="em-red">못 받아요</b> <span style="color:var(--muted);font-size:40px">(2026년부터)</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 청구 기한 5년 -->
+<section class="slide">
+  <div class="head">청구 기한은 <em>5년</em>이에요</div>
+  <div class="body">
+    <div class="flow">
+      <div class="step"><div class="n">2017년 1월</div><div class="t">받을 권리 생김</div></div>
+      <div class="arr">›</div>
+      <div class="step first"><div class="n">2021년 5월분부터</div><div class="t">한꺼번에 받음</div></div>
+      <div class="arr">›</div>
+      <div class="step"><div class="n">2026년 5월</div><div class="t">청구함</div></div>
+    </div>
+    <div class="result">앞의 <span class="em-red">4년 넘는 기간</span>은 사라져요</div>
+    <div class="note">국민연금공단 안내 예시</div>
+  </div>
+</section>
+
+<!-- 15. 영자 씨 -->
+<section class="slide">
+  <div class="head">6년 늦게 청구했더니</div>
+  <div class="tag">가상 예시 · 영자 씨</div>
+  <div class="body">
+    <div class="row">
+      <div class="card pick">
+        <div class="k">받은 돈 (최근 5년)</div>
+        <div class="s">30만 원 × 60개월</div>
+        <div class="v em-green">1,800만 원</div>
+      </div>
+      <div class="card lose">
+        <div class="k">사라진 돈 (처음 1년)</div>
+        <div class="s">30만 원 × 12개월</div>
+        <div class="v em-red">360만 원</div>
+      </div>
+    </div>
+    <div class="result">1년 더 늦으면 <span class="hl">720만 원</span>이 사라져요</div>
+  </div>
+</section>
+
+<!-- 16. 마지막 -->
+<section class="slide">
+  <div class="head">오늘 <em>이것 하나</em>는 꼭 기억하세요</div>
+  <div class="body">
+    <div class="bigsub" style="margin-top:0">내 연금을 고르면, 유족연금은</div>
+    <div class="big">30%</div>
+    <div class="bigsub">만 들어와요</div>
+  </div>
+</section>
+
+<script>
+  const n = parseInt(location.hash.slice(1) || "1", 10);
+  const all = document.querySelectorAll(".slide");
+  (all[n - 1] || all[0]).classList.add("on");
+</script>
+</body>
+</html>
