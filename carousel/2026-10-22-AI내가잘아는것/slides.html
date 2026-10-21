@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>내가 잘 아는 것 캐러셀</title>
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 400; src: url("../../assets/fonts/Pretendard-Regular.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("../../assets/fonts/Pretendard-SemiBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("../../assets/fonts/Pretendard-Bold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("../../assets/fonts/Pretendard-ExtraBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("../../assets/fonts/Pretendard-Black.otf"); }
+
+  :root {
+    --bg: #F5EFE6;
+    --ink: #2A211B;
+    --muted: #64564B;
+    --accent: #7A4A2A;
+    --card: #FFFFFF;
+    --line: #E4D8C6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: var(--bg); }
+  body { font-family: "Pretendard"; color: var(--ink); word-break: keep-all; }
+
+  .slide { display: none; position: relative; width: 1080px; height: 1350px; padding: 210px 96px; flex-direction: column; justify-content: center; }
+  .slide.on { display: flex; }
+
+  .bar { width: 120px; height: 14px; background: var(--accent); border-radius: 7px; margin-bottom: 48px; }
+  h1 { font-weight: 900; font-size: 96px; line-height: 1.18; letter-spacing: -0.03em; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .cover { padding: 210px 190px; align-items: center; text-align: center; }
+  .cover h1 { font-size: 112px; }
+  .cover .sub { font-size: 50px; }
+  p { font-weight: 400; font-size: 48px; line-height: 1.5; letter-spacing: -0.01em; margin-top: 48px; color: var(--ink); }
+  p b { font-weight: 700; }
+  .sub { font-weight: 600; font-size: 54px; color: var(--muted); margin-top: 56px; }
+
+  .bubble { background: var(--card); border: 3px solid var(--line); border-radius: 40px 40px 40px 12px; padding: 36px 44px; font-weight: 600; font-size: 46px; line-height: 1.42; letter-spacing: -0.02em; margin-top: 36px; }
+  .bubble.first { margin-top: 64px; }
+  .arrow { font-weight: 800; font-size: 56px; color: var(--accent); margin: 20px 0 0 44px; line-height: 1; }
+  .note { font-weight: 600; font-size: 46px; color: var(--muted); margin-top: 56px; }
+
+  .num { display: flex; gap: 36px; align-items: flex-start; margin-top: 64px; }
+  .num .n { flex: none; width: 104px; height: 104px; border-radius: 52px; background: var(--accent); color: #fff; font-weight: 900; font-size: 60px; display: flex; align-items: center; justify-content: center; }
+  .num .t { font-weight: 700; font-size: 52px; line-height: 1.38; letter-spacing: -0.02em; padding-top: 10px; }
+  .num .t span { display: block; font-weight: 400; font-size: 44px; color: var(--muted); margin-top: 8px; }
+
+  .list { margin-top: 64px; }
+  .list div { font-weight: 700; font-size: 56px; line-height: 1.3; letter-spacing: -0.02em; padding: 30px 0; border-bottom: 3px solid var(--line); }
+  .list div:last-child { border-bottom: none; }
+  .list i { font-style: normal; color: var(--accent); margin-right: 20px; }
+
+  .last { background: var(--accent); color: #fff; }
+  .last p { color: #fff; }
+  .last .bar { background: #fff; }
+  .last .save { font-weight: 700; font-size: 48px; margin-top: 72px; padding-top: 48px; border-top: 3px solid rgba(255,255,255,.45); }
+
+  .tight h1 { font-size: 88px; }
+  .tight .bubble.first, .tight .list { margin-top: 52px; }
+  .page { position: absolute; right: 96px; bottom: 140px; font-weight: 600; font-size: 36px; color: var(--muted); }
+  .last .page { color: rgba(255,255,255,.85); }
+</style>
+</head>
+<body>
+
+<section class="slide cover">
+  <div class="bar"></div>
+  <h1>내가<br>잘 아는 것,<br><em>AI와 찾아요</em></h1>
+  <div class="sub">당연하게 여긴 게<br>누군가에겐 보물이에요</div>
+</section>
+
+<section class="slide">
+  <h1>“나는 내세울<br>게 없는데…”</h1>
+  <p>그런 생각부터 드시죠?<br>오래 해 온 일 속에<br><b>알려 줄 거리가 숨어 있어요.</b></p>
+</section>
+
+<section class="slide">
+  <div class="bar"></div>
+  <h1>먼저<br><em>세 줄</em>만 적어요</h1>
+  <p>무슨 일을 해 왔는지,<br>무엇을 오래 했는지,<br><b>무엇을 좋아하는지.</b></p>
+</section>
+
+<section class="slide tight">
+  <h1>이렇게<br><em>물어보세요</em></h1>
+  <div class="bubble first">독서를 좋아해 도서관을 자주 가요.<br>사진 찍는 것도 좋아해요.<br>알려 줄 것 10가지 적어 주세요.</div>
+  <div class="arrow">↓</div>
+  <div class="bubble" style="margin-top:20px">그중 많이 궁금해할 것<br>3가지만 골라 주세요.</div>
+</section>
+
+<section class="slide tight">
+  <h1>예를 들면<br><em>이런 것들</em></h1>
+  <div class="list">
+    <div><i>1</i>동네 도서관 처음 이용하는 법</div>
+    <div><i>2</i>읽기 좋은 책 고르는 법</div>
+    <div><i>3</i>휴대폰 사진 잘 찍는 요령</div>
+  </div>
+  <p style="margin-top:32px">당연한 게 누군가에겐<br><b>꼭 필요한 정보예요.</b></p>
+</section>
+
+<section class="slide">
+  <div class="bar"></div>
+  <h1>목록은<br><em>이렇게 써요</em></h1>
+  <div class="num"><div class="n">1</div><div class="t">블로그·스레드 글감으로</div></div>
+  <div class="num"><div class="n">2</div><div class="t">복지관·모임에서 나누기</div></div>
+  <div class="num"><div class="n">3</div><div class="t">하나씩 더 깊게 정리하기</div></div>
+</section>
+
+<section class="slide">
+  <h1>꼭 기억할<br><em>세 가지</em></h1>
+  <div class="num"><div class="n">1</div><div class="t">AI 목록은 출발점이에요<span>내 경험으로 고치고 더하기</span></div></div>
+  <div class="num"><div class="n">2</div><div class="t">개인정보는 적지 않기</div></div>
+  <div class="num"><div class="n">3</div><div class="t">“쉽게 돈 번다” 광고는 조심</div></div>
+</section>
+
+<section class="slide">
+  <h1>한눈에 보기</h1>
+  <div class="list">
+    <div><i>1</i>살아온 이야기 세 줄</div>
+    <div><i>2</i>알려 줄 것 10가지 묻기</div>
+    <div><i>3</i>3가지 골라 달라기</div>
+    <div><i>4</i>글감·나눔으로 써 보기</div>
+  </div>
+</section>
+
+<section class="slide last">
+  <div class="bar"></div>
+  <h1>오늘<br>딱 하나만<br>해 보세요</h1>
+  <p>살아온 이야기 세 줄을 적고<br>“알려 줄 수 있는 것 10가지”<br>물어보세요.</p>
+  <div class="save">저장해 두고 천천히 따라 해 보세요</div>
+</section>
+
+<script>
+  const n = parseInt(location.hash.slice(1) || "1", 10);
+  document.querySelectorAll(".slide")[n - 1].classList.add("on");
+</script>
+</body>
+</html>
