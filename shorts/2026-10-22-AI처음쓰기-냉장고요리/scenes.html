@@ -39,7 +39,7 @@
   .notch { position: absolute; top: 18px; left: 50%; width: 150px; height: 36px; margin-left: -75px; border-radius: 18px; background: var(--phone); }
 
   .top { height: 120px; flex: none; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px; font-weight: 700; font-size: 34px; color: #444; border-bottom: 2px solid #EEE; }
-  .chat { flex: 1; padding: 28px 26px; display: flex; flex-direction: column; gap: 22px; }
+  .chat { flex: 1; min-height: 0; padding: 28px 26px; display: flex; flex-direction: column; gap: 22px; }
 
   .inputbar { margin: 0 20px 24px; border: 3px solid #D8D8D8; border-radius: 46px; min-height: 100px; padding: 16px 18px 16px 22px; display: flex; align-items: center; gap: 14px; background: #fff; flex: none; }
   .inputbar .plus { width: 58px; height: 58px; flex: none; border-radius: 29px; border: 3px solid #BBB; color: #888; font-size: 42px; font-weight: 400; line-height: 50px; text-align: center; }
@@ -71,6 +71,11 @@
 
   /* 대화 말풍선 */
   .me { align-self: flex-end; max-width: 86%; background: #F1F1F1; border-radius: 34px 34px 10px 34px; padding: 22px 28px; font-weight: 600; font-size: 32px; line-height: 1.4; letter-spacing: -0.02em; }
+  .reply { position: relative; flex: 1; overflow: hidden; padding: 0 6px; }
+  .reply::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(rgba(255,255,255,0), #fff); }
+  .reply p { font-weight: 600; font-size: 31px; line-height: 1.42; letter-spacing: -0.02em; margin-bottom: 14px; }
+  .reply h3 { font-weight: 900; font-size: 40px; letter-spacing: -0.03em; margin: 6px 0 6px; color: var(--accent); }
+  .reply .meta { color: var(--muted); }
   .ans { flex: 1; border: 4px dashed #CFC3B5; border-radius: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; padding: 30px; text-align: center; }
   .ans b { font-weight: 800; font-size: 38px; color: var(--muted); line-height: 1.35; }
   .ans span { display: block; width: 80%; height: 22px; border-radius: 11px; background: #EEE6DC; }
@@ -219,9 +224,12 @@
     <div class="top">ChatGPT</div>
     <div class="chat">
       <div class="me">냉장고에 두부랑 달걀이 있어. 간단한 요리 레시피 알려줘</div>
-      <div class="ans">
-        <b>여기에 실제<br>챗GPT 답 화면을<br>넣어요</b>
-        <span></span><span></span><span class="s"></span>
+      <div class="reply">
+        <p>냉장고에 달걀, 두부, 대파만 있어도 맛있는 반찬을 만들 수 있어요.</p>
+        <h3>1. 두부 달걀전</h3>
+        <p class="meta">조리시간 10분 · 2인분</p>
+        <p>재료: 두부 1/2모, 달걀 2개, 대파 조금, 소금, 식용유</p>
+        <p>1. 두부를 숟가락으로 으깨고 물기를 짜주세요.</p>
       </div>
     </div>
     <div class="inputbar">
