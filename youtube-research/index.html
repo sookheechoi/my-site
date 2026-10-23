@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>터진 영상 조사표</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --soft: #f6f6f6;
+    --line: #e4e4e4;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --red: #e00000;
+    --red-soft: #fff0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    font-size: 17px; line-height: 1.5;
+  }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { margin: 0 0 6px; font-size: 32px; letter-spacing: -0.5px; }
+  h1 span { color: var(--red); }
+  .rule { margin: 0 0 24px; color: var(--muted); font-size: 17px; }
+  .rule b { color: var(--text); }
+
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+    padding: 14px 16px; background: var(--soft); border-radius: 10px; margin-bottom: 14px;
+  }
+  .filters label { display: flex; align-items: center; gap: 6px; font-size: 16px; }
+  select, input[type=text], input[type=number], input[type=date], input[type=url], textarea {
+    font: inherit; font-size: 16px; padding: 7px 10px; border: 1px solid #cfcfcf;
+    border-radius: 7px; background: #fff; color: var(--text);
+  }
+  input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--red); cursor: pointer; }
+  .count { margin-left: auto; color: var(--muted); font-size: 16px; }
+
+  .table-box { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 1250px; }
+  th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-size: 15px; color: var(--muted); white-space: nowrap; position: sticky; top: 0; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  tr.done td { opacity: 0.45; }
+  tr.done td.check { opacity: 1; }
+  .title a { color: var(--text); font-weight: 700; text-decoration: none; }
+  .title a:hover { text-decoration: underline; }
+  .tag { display: inline-block; padding: 2px 9px; border-radius: 999px; background: var(--soft); font-size: 14px; white-space: nowrap; }
+  .tag.shorts { background: var(--red-soft); color: var(--red); }
+  .ratio { font-size: 22px; font-weight: 800; color: var(--red); }
+  .star { color: var(--red); }
+  .ago { display: block; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .chip {
+    font: inherit; font-size: 14px; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid #cfcfcf; background: #fff; cursor: pointer; color: var(--text);
+  }
+  .chip.on { background: var(--red); border-color: var(--red); color: #fff; }
+  td textarea { width: 100%; min-width: 170px; min-height: 40px; resize: vertical; }
+  .del { font: inherit; font-size: 14px; border: none; background: none; color: var(--muted); cursor: pointer; text-decoration: underline; }
+  .mine { font-size: 13px; color: var(--muted); }
+  .empty { padding: 40px 16px; text-align: center; color: var(--muted); font-size: 18px; }
+  .empty b { color: var(--text); }
+
+  .add { margin-top: 26px; padding: 18px 16px; border: 2px dashed var(--line); border-radius: 10px; }
+  .add h2 { margin: 0 0 12px; font-size: 21px; }
+  .add-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .add-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: var(--muted); }
+  .add-grid .wide { grid-column: span 2; }
+  .add-foot { display: flex; align-items: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+  .btn { font: inherit; font-size: 17px; font-weight: 700; padding: 10px 22px; border: none; border-radius: 8px; background: var(--red); color: #fff; cursor: pointer; }
+  .preview { color: var(--muted); }
+  .preview b { color: var(--red); }
+  @media (max-width: 600px) {
+    h1 { font-size: 26px; }
+    .add-grid .wide { grid-column: span 1; }
+    .count { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>터진 영상 <span>조사표</span></h1>
+  <p class="rule">기준: <b>최근 2주 이내</b> · <b>구독자 1,000명 이하</b> · <b>조회수가 구독자의 5배 이상</b> (10배 이상은 <span class="star">★</span>)</p>
+
+  <div class="filters">
+    <label>키워드 <select id="fKeyword"></select></label>
+    <label>종류 <select id="fType"><option value="">전체</option><option>쇼츠</option><option>롱폼</option></select></label>
+    <label>체크 <select id="fCheck"><option value="">전체</option><option value="no">안 한 것만</option><option value="yes">체크한 것만</option></select></label>
+    <label><input type="checkbox" id="fStar"> <span class="star">★</span>만 보기</label>
+    <label>정렬 <select id="fSort"><option value="ratio">배수 높은 순</option><option value="date">최신순</option></select></label>
+    <span class="count" id="count"></span>
+  </div>
+
+  <div class="table-box">
+    <table>
+      <thead>
+        <tr>
+          <th>확인</th><th>키워드</th><th>종류</th><th>제목</th><th>채널</th>
+          <th class="num">구독자</th><th class="num">조회수</th><th class="num">배수</th>
+          <th>올린 날</th><th>왜 터졌나</th><th>메모</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden></div>
+  </div>
+
+  <form class="add" id="addForm">
+    <h2>+ 새 항목 추가</h2>
+    <div class="add-grid">
+      <label>키워드 <input type="text" name="keyword" list="kwList" required></label>
+      <label>종류 <select name="type"><option>쇼츠</option><option>롱폼</option></select></label>
+      <label class="wide">제목 <input type="text" name="title" required></label>
+      <label class="wide">유튜브 링크 <input type="url" name="url" placeholder="https://www.youtube.com/..."></label>
+      <label>채널 <input type="text" name="channel"></label>
+      <label>구독자 수 <input type="number" name="subs" min="1" required></label>
+      <label>조회수 <input type="number" name="views" min="0" required></label>
+      <label>올린 날 <input type="date" name="date"></label>
+    </div>
+    <datalist id="kwList"></datalist>
+    <div class="add-foot">
+      <button class="btn" type="submit">추가하기</button>
+      <span class="preview" id="preview">구독자 수와 조회수를 넣으면 배수가 계산돼요.</span>
+    </div>
+  </form>
+</div>
+
+<script src="data.js"></script>
+<script>
+  const KEY = "yt-research-v1";
+  const PATTERNS = ["숫자형", "질문형", "대상 지정", "기타"];
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && typeof s === "object") return { checks: {}, memos: {}, whys: {}, custom: [], ...s };
+    } catch (e) {}
+    return { checks: {}, memos: {}, whys: {}, custom: [] };
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  const state = load();
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (n) => Number(n || 0).toLocaleString("ko-KR");
+  const ratioOf = (v) => (v.subs > 0 ? v.views / v.subs : 0);
+  const ratioText = (r) => (r >= 10 ? Math.round(r) : r.toFixed(1)) + "배";
+
+  function allVideos() {
+    const base = (window.VIDEO_DATA || []).map((v) => ({ ...v, mine: false }));
+    return base.concat(state.custom.map((v) => ({ ...v, mine: true })));
+  }
+
+  function daysAgo(d) {
+    if (!d) return "";
+    const diff = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(d + "T00:00:00")) / 86400000);
+    if (isNaN(diff)) return "";
+    return diff <= 0 ? "오늘" : diff + "일 전";
+  }
+
+  function fillKeywords() {
+    const kws = [...new Set(allVideos().map((v) => v.keyword).filter(Boolean))].sort();
+    const sel = $("fKeyword"), cur = sel.value;
+    sel.innerHTML = '<option value="">전체</option>' + kws.map((k) => `<option>${esc(k)}</option>`).join("");
+    sel.value = kws.includes(cur) ? cur : "";
+    $("kwList").innerHTML = kws.map((k) => `<option value="${esc(k)}">`).join("");
+  }
+
+  function render() {
+    const fk = $("fKeyword").value, ft = $("fType").value, fc = $("fCheck").value;
+    const star = $("fStar").checked, sort = $("fSort").value;
+    const all = allVideos();
+    let list = all.filter((v) =>
+      (!fk || v.keyword === fk) &&
+      (!ft || v.type === ft) &&
+      (!fc || (fc === "yes") === !!state.checks[v.id]) &&
+      (!star || ratioOf(v) >= 10)
+    );
+    list.sort(sort === "date"
+      ? (a, b) => String(b.date || "").localeCompare(String(a.date || ""))
+      : (a, b) => ratioOf(b) - ratioOf(a));
+
+    $("rows").innerHTML = list.map((v) => {
+      const r = ratioOf(v), done = !!state.checks[v.id];
+      const why = state.whys[v.id] || { tags: [], text: "" };
+      const title = v.url ? `<a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.title)}</a>` : esc(v.title);
+      return `<tr class="${done ? "done" : ""}" data-id="${esc(v.id)}">
+        <td class="check"><input type="checkbox" data-act="check" ${done ? "checked" : ""} aria-label="확인"></td>
+        <td>${esc(v.keyword)}</td>
+        <td><span class="tag ${v.type === "쇼츠" ? "shorts" : ""}">${esc(v.type || "-")}</span></td>
+        <td class="title">${title}${v.mine ? '<div class="mine">직접 추가</div>' : ""}</td>
+        <td>${esc(v.channel)}</td>
+        <td class="num">${fmt(v.subs)}</td>
+        <td class="num">${fmt(v.views)}</td>
+        <td class="num"><span class="ratio">${r >= 10 ? '<span class="star">★</span> ' : ""}${ratioText(r)}</span></td>
+        <td>${esc(v.date || "-")}<span class="ago">${daysAgo(v.date)}</span></td>
+        <td><div class="chips">${PATTERNS.map((p) => `<button type="button" class="chip ${why.tags.includes(p) ? "on" : ""}" data-act="tag" data-tag="${p}">${p}</button>`).join("")}</div>
+          <textarea data-act="why" placeholder="직접 쓰기">${esc(why.text)}</textarea></td>
+        <td><textarea data-act="memo" placeholder="메모">${esc(state.memos[v.id] || "")}</textarea></td>
+        <td>${v.mine ? '<button type="button" class="del" data-act="del">삭제</button>' : ""}</td>
+      </tr>`;
+    }).join("");
+
+    const empty = $("empty");
+    if (!all.length) {
+      empty.hidden = false;
+      empty.innerHTML = "아직 영상이 없어요.<br>클로드에게 <b>“○○ 키워드로 찾아 줘”</b>라고 말하거나, 아래에서 직접 추가해 보세요.";
+    } else if (!list.length) {
+      empty.hidden = false;
+      empty.textContent = "조건에 맞는 영상이 없어요. 필터를 바꿔 보세요.";
+    } else empty.hidden = true;
+    const checked = all.filter((v) => state.checks[v.id]).length;
+    $("count").textContent = `보이는 영상 ${list.length}개 · 전체 ${all.length}개 · 체크 ${checked}개`;
+  }
+
+  $("rows").addEventListener("change", (e) => {
+    const tr = e.target.closest("tr"); if (!tr) return;
+    if (e.target.dataset.act === "check") {
+      const id = tr.dataset.id;
+      if (e.target.checked) state.checks[id] = true; else delete state.checks[id];
+      save(); render();
+    }
+  });
+  $("rows").addEventListener("input", (e) => {
+    const tr = e.target.closest("tr"); if (!tr) return;
+    const id = tr.dataset.id, act = e.target.dataset.act;
+    if (act === "memo") state.memos[id] = e.target.value;
+    if (act === "why") state.whys[id] = { tags: (state.whys[id] || {}).tags || [], text: e.target.value };
+    save();
+  });
+  $("rows").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr"); if (!tr) return;
+    const id = tr.dataset.id, act = e.target.dataset.act;
+    if (act === "tag") {
+      const w = state.whys[id] || { tags: [], text: "" };
+      const t = e.target.dataset.tag;
+      w.tags = w.tags.includes(t) ? w.tags.filter((x) => x !== t) : w.tags.concat(t);
+      state.whys[id] = w;
+      e.target.classList.toggle("on");
+      save();
+    }
+    if (act === "del" && confirm("이 항목을 지울까요?")) {
+      state.custom = state.custom.filter((v) => v.id !== id);
+      delete state.checks[id]; delete state.memos[id]; delete state.whys[id];
+      save(); fillKeywords(); render();
+    }
+  });
+
+  ["fKeyword", "fType", "fCheck", "fStar", "fSort"].forEach((id) => $(id).addEventListener("change", render));
+
+  const form = $("addForm");
+  form.addEventListener("input", () => {
+    const s = Number(form.subs.value), v = Number(form.views.value);
+    $("preview").innerHTML = s > 0 && form.views.value !== ""
+      ? `배수: <b>${v / s >= 10 ? "★ " : ""}${ratioText(v / s)}</b>${v / s < 5 ? " (기준 5배보다 낮아요)" : ""}${s > 1000 ? " · 구독자가 1,000명을 넘어요" : ""}`
+      : "구독자 수와 조회수를 넣으면 배수가 계산돼요.";
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const f = form;
+    state.custom.push({
+      id: "my-" + Date.now(),
+      keyword: f.keyword.value.trim(), type: f.type.value, title: f.title.value.trim(),
+      url: f.url.value.trim(), channel: f.channel.value.trim(),
+      subs: Number(f.subs.value), views: Number(f.views.value), date: f.date.value,
+    });
+    save();
+    const kw = f.keyword.value, type = f.type.value;
+    f.reset(); f.keyword.value = kw; f.type.value = type;
+    $("preview").textContent = "추가했어요.";
+    fillKeywords(); render();
+  });
+
+  fillKeywords();
+  render();
+</script>
+</body>
+</html>
