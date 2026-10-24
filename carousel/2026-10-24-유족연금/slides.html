@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>유족연금 캐러셀</title>
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 400; src: url("../../assets/fonts/Pretendard-Regular.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("../../assets/fonts/Pretendard-SemiBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("../../assets/fonts/Pretendard-Bold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("../../assets/fonts/Pretendard-ExtraBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("../../assets/fonts/Pretendard-Black.otf"); }
+
+  :root {
+    --bg: #EAF1F8;
+    --ink: #16243A;
+    --muted: #4E5D72;
+    --accent: #1D3F7A;
+    --card: #FFFFFF;
+    --line: #D2DDEA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: var(--bg); }
+  body { font-family: "Pretendard"; color: var(--ink); word-break: keep-all; }
+
+  .slide { display: none; position: relative; width: 1080px; height: 1350px; padding: 210px 96px; flex-direction: column; justify-content: center; }
+  .slide.on { display: flex; }
+
+  .bar { width: 120px; height: 14px; background: var(--accent); border-radius: 7px; margin-bottom: 48px; }
+  h1 { font-weight: 900; font-size: 96px; line-height: 1.18; letter-spacing: -0.03em; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .cover { padding: 210px 190px; align-items: center; text-align: center; }
+  .cover h1 { font-size: 112px; }
+  .cover .sub { font-size: 50px; }
+  p { font-weight: 400; font-size: 48px; line-height: 1.5; letter-spacing: -0.01em; margin-top: 48px; color: var(--ink); }
+  p b { font-weight: 700; }
+  .sub { font-weight: 600; font-size: 54px; color: var(--muted); margin-top: 56px; }
+
+  .bubble { background: var(--card); border: 3px solid var(--line); border-radius: 40px 40px 40px 12px; padding: 36px 44px; font-weight: 600; font-size: 46px; line-height: 1.42; letter-spacing: -0.02em; margin-top: 36px; }
+  .bubble.first { margin-top: 64px; }
+  .arrow { font-weight: 800; font-size: 56px; color: var(--accent); margin: 20px 0 0 44px; line-height: 1; }
+  .note { font-weight: 600; font-size: 46px; color: var(--muted); margin-top: 56px; }
+
+  .num { display: flex; gap: 36px; align-items: flex-start; margin-top: 64px; }
+  .num .n { flex: none; width: 104px; height: 104px; border-radius: 52px; background: var(--accent); color: #fff; font-weight: 900; font-size: 60px; display: flex; align-items: center; justify-content: center; }
+  .num .t { font-weight: 700; font-size: 52px; line-height: 1.38; letter-spacing: -0.02em; padding-top: 10px; }
+  .num .t span { display: block; font-weight: 400; font-size: 44px; color: var(--muted); margin-top: 8px; }
+
+  .list { margin-top: 64px; }
+  .list div { font-weight: 700; font-size: 56px; line-height: 1.3; letter-spacing: -0.02em; padding: 30px 0; border-bottom: 3px solid var(--line); }
+  .list div:last-child { border-bottom: none; }
+  .list i { font-style: normal; color: var(--accent); margin-right: 20px; }
+
+  .last { background: var(--accent); color: #fff; }
+  .last p { color: #fff; }
+  .last .bar { background: #fff; }
+  .last .save { font-weight: 700; font-size: 48px; margin-top: 72px; padding-top: 48px; border-top: 3px solid rgba(255,255,255,.45); }
+
+  .tight h1 { font-size: 88px; }
+  .tight .bubble.first, .tight .list { margin-top: 52px; }
+  .page { position: absolute; right: 96px; bottom: 140px; font-weight: 600; font-size: 36px; color: var(--muted); }
+  .last .page { color: rgba(255,255,255,.85); }
+</style>
+</head>
+<body>
+
+<section class="slide cover">
+  <div class="bar"></div>
+  <h1>유족연금,<br><em>무엇을<br>고를까?</em></h1>
+  <div class="sub">내 연금 vs 유족연금<br>창구 가기 전에 꼭</div>
+</section>
+
+<section class="slide">
+  <h1>“남편 연금,<br>그대로 내가<br>받겠지?”</h1>
+  <p>아니에요. 유족연금은<br>가입 기간에 따라<br><b>40·50·60%만 나와요.</b></p>
+</section>
+
+<section class="slide tight">
+  <h1>가입 기간이<br><em>비율을 정해요</em></h1>
+  <div class="list">
+    <div><i>1</i>10년 미만 → 40%</div>
+    <div><i>2</i>10년~20년 미만 → 50%</div>
+    <div><i>3</i>20년 이상 → 60%</div>
+  </div>
+  <p style="margin-top:32px">돌아가신 분의<br><b>기본연금액 기준이에요.</b></p>
+</section>
+
+<section class="slide">
+  <h1>둘 다 있으면<br><em>하나를 골라요</em></h1>
+  <div class="num"><div class="n">1</div><div class="t">유족연금을 고르면<br>유족연금 전부<span>내 연금은 멈춰요</span></div></div>
+  <div class="num"><div class="n">2</div><div class="t">내 연금을 고르면<br>내 연금 + 유족연금의 30%</div></div>
+</section>
+
+<section class="slide">
+  <h1>숫자로<br><em>계산해 보면</em></h1>
+  <p style="font-size:44px;color:var(--muted)">(가정) 유족연금 80만 원, 내 연금 20만 원</p>
+  <div class="list" style="margin-top:28px">
+    <div><i>1</i>유족연금 → 80만 원</div>
+    <div><i>2</i>내 연금 → 20만+24만=44만 원</div>
+  </div>
+  <p style="margin-top:28px"><b>한 달 36만 원 차이예요.</b></p>
+</section>
+
+<section class="slide">
+  <div class="bar"></div>
+  <h1>기준선은<br><em>유족연금의<br>70%</em></h1>
+  <p>내 연금이 이보다 적으면<br>유족연금 쪽이,<br><b>많으면 내 연금 쪽이 유리해요.</b></p>
+</section>
+
+<section class="slide">
+  <h1>꼭<br><em>직접 청구하세요</em></h1>
+  <div class="num"><div class="n">1</div><div class="t">공단이 알아서<br>주지 않아요<span>직접 청구해야 나와요</span></div></div>
+  <div class="num"><div class="n">2</div><div class="t">5년이 지나면<br>사라져요<span>늦으면 최근 5년치만 받아요</span></div></div>
+</section>
+
+<section class="slide">
+  <h1>한눈에 보기</h1>
+  <div class="list">
+    <div><i>1</i>가입 기간 확인하기</div>
+    <div><i>2</i>두 연금 금액 적기</div>
+    <div><i>3</i>유족연금의 70%와 비교</div>
+    <div><i>4</i>1355에 전화·청구</div>
+  </div>
+</section>
+
+<section class="slide last">
+  <div class="bar"></div>
+  <h1>오늘<br>딱 하나만<br>해 보세요</h1>
+  <p>국민연금공단 1355에 전화해<br>“유족연금 예상액이 얼마인가요?”<br>물어보세요.</p>
+  <div class="save">저장해 두고 필요한 분께 공유해 주세요</div>
+</section>
+
+<script>
+  const n = parseInt(location.hash.slice(1) || "1", 10);
+  document.querySelectorAll(".slide")[n - 1].classList.add("on");
+</script>
+</body>
+</html>
