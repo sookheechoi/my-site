@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>캐러셀 템플릿 후보</title>
+<style>
+  @font-face { font-family: "Pretendard"; font-weight: 400; src: url("../../assets/fonts/Pretendard-Regular.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 600; src: url("../../assets/fonts/Pretendard-SemiBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 700; src: url("../../assets/fonts/Pretendard-Bold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 800; src: url("../../assets/fonts/Pretendard-ExtraBold.otf"); }
+  @font-face { font-family: "Pretendard"; font-weight: 900; src: url("../../assets/fonts/Pretendard-Black.otf"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body { font-family: "Pretendard"; word-break: keep-all; }
+  .slide { display: none; position: relative; width: 1080px; height: 1350px; overflow: hidden; }
+  .slide.on { display: block; }
+  .abs { position: absolute; }
+  h1, h2 { font-weight: 900; letter-spacing: -0.03em; line-height: 1.16; }
+
+  /* 1 신문 */
+  .news { background: #F2EADA; color: #191919; }
+  .news:before { content: ""; position: absolute; inset: 44px; border: 4px solid #191919; }
+  .news:after { content: ""; position: absolute; inset: 58px; border: 1.5px solid #191919; }
+  .news .in { position: absolute; z-index: 2; }
+  .news .mast { font-weight: 900; font-size: 58px; letter-spacing: -0.02em; text-align: center; padding-bottom: 20px; border-bottom: 8px solid #191919; }
+  .news .sub-m { font-weight: 700; font-size: 44px; text-align: center; padding: 14px 0; border-bottom: 2px solid #191919; }
+  .news h1 { font-size: 118px; text-align: center; margin-top: 56px; }
+  .news em { font-style: normal; color: #B3261E; }
+  .news h2 { font-size: 92px; padding-bottom: 34px; border-bottom: 8px solid #191919; }
+  .news .cols { display: grid; grid-template-columns: 1fr 1fr; margin-top: 40px; }
+  .news .col { padding: 0 34px; font-size: 46px; line-height: 1.34; font-weight: 400; }
+  .news .col:first-child { padding-left: 0; border-right: 2px solid #191919; }
+  .news .col:last-child { padding-right: 0; }
+  .news .col b { display: block; font-weight: 900; font-size: 56px; line-height: 1.2; margin-bottom: 22px; }
+  .news .col strong { font-weight: 900; color: #B3261E; }
+
+  /* 2 포스터 */
+  .poster { background: #0F3057; color: #fff; }
+  .poster .ball { position: absolute; border-radius: 50%; background: #F7C531; }
+  .poster .ring { position: absolute; border-radius: 50%; border: 44px solid rgba(255,255,255,.12); }
+  .poster h1 { font-size: 124px; }
+  .poster em { font-style: normal; color: #F7C531; }
+  .poster .tag { display: inline-block; background: #F7C531; color: #0F3057; font-weight: 900; font-size: 50px; padding: 14px 34px; transform: rotate(-3deg); }
+  .poster .big { font-weight: 900; font-size: 330px; line-height: .95; letter-spacing: -0.05em; color: #0F3057; }
+  .poster p { font-size: 50px; line-height: 1.3; font-weight: 800; color: #0F3057; }
+
+  /* 3 노트 */
+  .note { background: #FFFCF0; color: #26303A; background-image: repeating-linear-gradient(transparent 0 86px, #CFE0EE 86px 89px); }
+  .note .margin { position: absolute; left: 118px; top: 0; bottom: 0; width: 4px; background: #F0A3A3; }
+  .note .hole { position: absolute; left: 34px; width: 46px; height: 46px; border-radius: 50%; background: #E5DFCC; box-shadow: inset 0 5px 7px rgba(0,0,0,.2); }
+  .note mark { background: linear-gradient(transparent 52%, #FFD84D 52%); color: inherit; }
+  .note h1 { font-size: 118px; line-height: 1.22; }
+  .note .tape { position: absolute; width: 270px; height: 74px; background: rgba(120,190,170,.6); transform: rotate(-5deg); }
+  .note .post { position: absolute; background: #FFE873; box-shadow: 8px 12px 20px rgba(60,50,10,.22); }
+  .note .post2 { background: #BDE9D3; }
+  .note .hand { font-weight: 800; font-size: 50px; line-height: 1.32; }
+  .note .hand span { display: block; font-weight: 400; font-size: 44px; margin-top: 10px; }
+  .note h2 { font-size: 96px; line-height: 1.22; }
+
+  /* 4 휴대폰 대화 */
+  .chat { background: #BFE3D6; color: #16302A; }
+  .chat .dot { position: absolute; border-radius: 50%; background: #A6D6C5; }
+  .chat .phone { position: absolute; background: #16302A; border-radius: 76px; padding: 20px; }
+  .chat .screen { width: 100%; height: 100%; background: #F7FBF9; border-radius: 58px; padding: 40px 34px; overflow: hidden; }
+  .chat .top { font-weight: 900; font-size: 86px; line-height: 1.16; letter-spacing: -0.03em; }
+  .chat .top em { font-style: normal; color: #0E7C63; }
+  .chat .b { max-width: 88%; padding: 26px 34px; border-radius: 40px; font-weight: 700; font-size: 46px; line-height: 1.32; margin-top: 30px; width: fit-content; }
+  .chat .me { background: #0E7C63; color: #fff; margin-left: auto; border-bottom-right-radius: 10px; }
+  .chat .ai { background: #E2EFE9; border-bottom-left-radius: 10px; }
+
+  /* 5 인물 */
+  .person { background: #FBE3D3; color: #2B1E18; }
+  .person .blob { position: absolute; background: #F08A5D; border-radius: 50%; }
+  .person .arch { position: absolute; overflow: hidden; border-radius: 300px 300px 0 0; background: #fff; border: 12px solid #fff; }
+  .person .arch img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .person h1 { font-size: 104px; text-align: center; }
+  .person em { font-style: normal; color: #C2410C; }
+  .person .say { position: absolute; background: #2B1E18; color: #fff; font-weight: 800; font-size: 46px; line-height: 1.26; padding: 24px 36px; border-radius: 36px; text-align: center; }
+  .person .face { position: absolute; width: 230px; height: 230px; border-radius: 50%; overflow: hidden; border: 10px solid #fff; }
+  .person .face img { width: 100%; height: 100%; object-fit: cover; }
+  .person h2 { font-size: 92px; }
+  .person .card { position: absolute; background: #fff; border-radius: 44px; padding: 36px 44px; box-shadow: 0 16px 34px rgba(120,60,20,.14); }
+  .person .row { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; font-size: 48px; padding: 20px 0; }
+  .person .row + .row { border-top: 3px solid #F3E2D6; }
+  .person .row b { font-weight: 900; font-size: 66px; color: #C2410C; }
+</style>
+</head>
+<body>
+
+<section class="slide news">
+  <div class="in" style="left:190px;right:190px;top:262px">
+    <div class="mast">시니어프로보노 신문</div>
+    <div class="sub-m">창구 가기 전에 꼭</div>
+    <h1>유족연금<br><em>무엇을<br>고를까?</em></h1>
+  </div>
+</section>
+<section class="slide news">
+  <div class="in" style="left:96px;right:96px;top:262px">
+    <h2>둘 다 있으면<br>하나를 골라요</h2>
+    <div class="cols">
+      <div class="col"><b>유족연금을 고르면</b>유족연금 <strong>전부</strong>를 받아요. 내 연금은 멈춰요.</div>
+      <div class="col"><b>내 연금을 고르면</b>내 연금에 유족연금의 <strong>30%</strong>를 더해요.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide poster">
+  <div class="ring" style="width:760px;height:760px;right:-250px;top:-170px"></div>
+  <div class="ball" style="width:430px;height:430px;left:-130px;bottom:-110px"></div>
+  <div class="abs" style="left:190px;right:190px;top:330px">
+    <span class="tag">창구 가기 전에 꼭</span>
+    <h1 style="margin-top:52px">유족연금,<br><em>무엇을<br>고를까?</em></h1>
+  </div>
+</section>
+<section class="slide poster">
+  <div class="ball" style="width:900px;height:900px;left:90px;top:210px"></div>
+  <div class="abs" style="left:0;right:0;top:330px;text-align:center;color:#0F3057">
+    <div style="font-weight:900;font-size:72px">기준선은 유족연금의</div>
+    <div class="big" style="margin-top:12px">70%</div>
+  </div>
+  <div class="abs" style="left:96px;right:96px;top:880px;text-align:center"><p>내 연금이 이보다 적으면<br>유족연금 쪽이 유리해요</p></div>
+</section>
+
+<section class="slide note">
+  <div class="margin"></div>
+  <div class="hole" style="top:170px"></div><div class="hole" style="top:440px"></div><div class="hole" style="top:710px"></div><div class="hole" style="top:980px"></div><div class="hole" style="top:1250px"></div>
+  <div class="tape" style="left:405px;top:228px"></div>
+  <div class="abs" style="left:190px;right:190px;top:344px;text-align:center">
+    <h1>유족연금,<br><mark>무엇을</mark><br><mark>고를까?</mark></h1>
+  </div>
+  <div class="post" style="left:320px;top:852px;width:440px;padding:32px 20px;transform:rotate(-3deg);text-align:center"><div class="hand">창구 가기<br>전에 꼭!</div></div>
+</section>
+<section class="slide note">
+  <div class="margin"></div>
+  <div class="hole" style="top:170px"></div><div class="hole" style="top:440px"></div><div class="hole" style="top:710px"></div><div class="hole" style="top:980px"></div><div class="hole" style="top:1250px"></div>
+  <div class="abs" style="left:160px;right:96px;top:262px"><h2>꼭 <mark>직접</mark><br>청구하세요</h2></div>
+  <div class="post" style="left:160px;top:560px;width:800px;padding:36px 44px;transform:rotate(-1.4deg)"><div class="hand">공단이 알아서 주지 않아요<span>직접 청구해야 나와요</span></div></div>
+  <div class="post post2" style="left:160px;top:810px;width:800px;padding:36px 44px;transform:rotate(1.2deg)"><div class="hand">5년이 지나면 사라져요<span>늦으면 최근 5년치만 받아요</span></div></div>
+</section>
+
+<section class="slide chat">
+  <div class="dot" style="width:380px;height:380px;left:-120px;top:-90px"></div>
+  <div class="dot" style="width:300px;height:300px;right:-70px;bottom:120px"></div>
+  <div class="phone" style="left:190px;width:700px;top:190px;height:1320px">
+    <div class="screen">
+      <div class="top" style="margin-top:50px">유족연금,<br><em>무엇을<br>고를까?</em></div>
+      <div class="b me" style="margin-top:44px">남편 연금,<br>그대로 받나요?</div>
+      <div class="b ai">아니에요.<br>먼저 알아 두세요.</div>
+    </div>
+  </div>
+</section>
+<section class="slide chat">
+  <div class="dot" style="width:300px;height:300px;right:-90px;top:-60px"></div>
+  <div class="phone" style="left:96px;width:888px;top:190px;height:1320px">
+    <div class="screen">
+      <div class="b me" style="margin-top:44px">남편 연금,<br>그대로 내가 받나요?</div>
+      <div class="b ai">아니에요. 가입 기간에<br>따라 비율이 달라요.</div>
+      <div class="b ai" style="font-size:54px;font-weight:900;line-height:1.42">10년 미만 40%<br>10~20년 미만 50%<br>20년 이상 60%</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide person">
+  <div class="blob" style="width:880px;height:880px;left:100px;top:700px"></div>
+  <div class="abs" style="left:190px;right:190px;top:252px"><h1>유족연금,<br><em>무엇을 고를까?</em></h1></div>
+  <div class="arch" style="left:240px;top:620px;width:600px;height:730px;background:url(../../youtube-info/assets/channel-model-woman.webp) -15px -46px / 1536px auto no-repeat"></div>
+  <div class="say" style="left:290px;top:1000px;width:500px">창구 가기 전에 꼭!</div>
+</section>
+<section class="slide person">
+  <div class="abs" style="left:96px;top:262px"><h2>숫자로<br><em>계산해 보면</em></h2></div>
+  <div class="face" style="right:96px;top:252px;background:url(../../youtube-info/assets/channel-model-woman.webp) -114px -35px / 875px auto no-repeat"></div>
+  <div class="card" style="left:96px;right:96px;top:560px">
+    <div class="row"><span>유족연금을 고르면</span><b>80만 원</b></div>
+    <div class="row"><span>내 연금을 고르면</span><b>44만 원</b></div>
+  </div>
+  <div class="say" style="left:96px;right:96px;top:912px">한 달 36만 원 차이예요</div>
+  <div class="abs" style="left:96px;right:96px;top:1040px;text-align:center;font-size:44px;color:#6A5548">(가정) 유족연금 80만 원, 내 연금 20만 원</div>
+</section>
+
+<script>
+  const n = parseInt(location.hash.slice(1) || "1", 10);
+  document.querySelectorAll(".slide")[n - 1].classList.add("on");
+</script>
+</body>
+</html>
